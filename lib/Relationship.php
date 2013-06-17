@@ -148,7 +148,11 @@ abstract class AbstractRelationship implements InterfaceRelationship
 		if (!empty($includes))
 			$options['include'] = $includes;
 
+		$skip_id_verification = false;
 		if (!empty($options['through'])) {
+			//since the query is through another table, all received entries will apply to the models
+			$skip_id_verification = true;
+
 			// save old keys as we will be reseting them below for inner join convenience
 			$pk = $this->primary_key;
 			$fk = $this->foreign_key;
@@ -186,7 +190,7 @@ abstract class AbstractRelationship implements InterfaceRelationship
 
 			foreach ($related_models as $related)
 			{
-				if ($related->$query_key == $key_to_match)
+				if ($skip_id_verification || $related->$query_key == $key_to_match)
 				{
 					$hash = spl_object_hash($related);
 
